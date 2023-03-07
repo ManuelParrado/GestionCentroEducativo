@@ -157,7 +157,9 @@ public class ControllerCurso {
 	 * @param curso
 	 * @return
 	 */
-	public static Curso guardarRegistro(Curso curso) {
+	public static int guardarRegistro(Curso curso) {
+		
+		int afected;
 		
 		try {
 
@@ -166,13 +168,13 @@ public class ControllerCurso {
 
 			try {
 				
-				st.executeUpdate("INSERT INTO centroeducativo.curso (id, descripcion)"
+				afected = st.executeUpdate("INSERT INTO centroeducativo.curso (id, descripcion)"
 						+ "VALUES ("+curso.getId()+",'"+curso.getDescripcion()+"');");
 				
 			} catch (SQLIntegrityConstraintViolationException e) {
 				// Si lanza un error de primary key duplicada al insertar hace un update en lugar de un insert
 				// para que se pueda modificar el registro sin tener que meter un nuevo id
-				st.executeUpdate("UPDATE centroeducativo.curso "
+				afected = st.executeUpdate("UPDATE centroeducativo.curso "
 						+ "SET descripcion = '"+curso.getDescripcion()+"' "
 								+ "WHERE id = "+curso.getId()+" ;");
 			}
@@ -180,12 +182,12 @@ public class ControllerCurso {
 			
 			st.close();
 			
-			return curso;
+			return afected;
 
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return null;
+		return 0;
 		
 		
 	}
@@ -196,24 +198,26 @@ public class ControllerCurso {
 	 * @param curso
 	 * @return
 	 */
-	public static Curso eliminarRegistro(Curso curso) {
+	public static int eliminarRegistro(Curso curso) {
+		
+		int afected;
 		
 		try {
 
 			conn = Controllers.ConnectionManagerV1.getConexion();
 			java.sql.Statement st = conn.createStatement();
 
-			st.executeUpdate("DELETE FROM centroeducativo.curso WHERE id = "+curso.getId()+";");
+			afected = st.executeUpdate("DELETE FROM centroeducativo.curso WHERE id = "+curso.getId()+";");
 
 			
 			st.close();
 			
-			return curso;
+			return afected;
 
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return null;
+		return 0;
 		
 	}
 	
@@ -223,7 +227,9 @@ public class ControllerCurso {
 	 * @param curso
 	 * @return
 	 */
-	public static Curso insertarRegistro(Curso curso) {
+	public static int insertarRegistro(Curso curso) {
+		
+		int afected;
 		
 		try {
 
@@ -233,13 +239,13 @@ public class ControllerCurso {
 			
 			try {
 				
-				st.executeUpdate("INSERT INTO centroeducativo.curso (id, descripcion)"
+				afected = st.executeUpdate("INSERT INTO centroeducativo.curso (id, descripcion)"
 						+ "VALUES ("+curso.getId()+",'"+curso.getDescripcion()+"');");
 				
 			} catch (SQLIntegrityConstraintViolationException e) {
 				// Si lanza un error de primary key duplicada al insertar hace un update en lugar de un insert
 				// para que se pueda modificar el registro sin tener que meter un nuevo id
-				st.executeUpdate("UPDATE centroeducativo.curso "
+				afected = st.executeUpdate("UPDATE centroeducativo.curso "
 						+ "SET descripcion = '"+curso.getDescripcion()+"' "
 								+ "WHERE id = "+curso.getId()+" ;");
 			}
@@ -247,13 +253,13 @@ public class ControllerCurso {
 			
 			st.close();
 			
-			return curso;
+			return afected;
 
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		
-		return null;
+		return 0;
 		
 	}
 

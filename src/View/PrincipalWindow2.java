@@ -23,10 +23,7 @@ public class PrincipalWindow2 extends JFrame {
 		
 		tabedPane.add("Cursos", new PanelCurso());
 		
-		JPanel pnl2 = new JPanel();
-		pnl2.setBackground(Color.RED);
-		
-		tabedPane.add("Pestaña 2", pnl2);
+		tabedPane.add("Materia", new PanelMateria());
 		
 		this.setContentPane(tabedPane);
 	}
