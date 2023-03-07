@@ -130,7 +130,9 @@ public class ControllerCurso {
 			conn = Controllers.ConnectionManagerV1.getConexion();
 			java.sql.Statement st = conn.createStatement();
 
-			ResultSet rs = st.executeQuery("select * from curso where id < "+curso.getId()+" order by id limit 1");
+			ResultSet rs = st.executeQuery("SELECT *\r\n"
+					+ "FROM centroeducativo.curso\r\n"
+					+ "WHERE id = (SELECT MAX(id) FROM centroeducativo.curso WHERE id < "+curso.getId()+");");
 
 			if (rs.next()) {
 
@@ -221,7 +223,7 @@ public class ControllerCurso {
 	 * @param curso
 	 * @return
 	 */
-	public static Curso insertarRegistro(Curso curso, String valor) {
+	public static Curso insertarRegistro(Curso curso) {
 		
 		try {
 

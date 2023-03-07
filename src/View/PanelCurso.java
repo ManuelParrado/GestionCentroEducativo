@@ -185,6 +185,8 @@ public class PanelCurso extends JPanel {
 		
 	}
 	
+	
+	
 	/**
 	 * 
 	 */
@@ -192,7 +194,7 @@ public class PanelCurso extends JPanel {
 		
 		Curso curso = new Curso(Integer.parseInt(this.jtextid.getText()), this.jdescripcion.getText());
 
-		Curso curso2 = ControllerCurso.insertarRegistro(curso, this.jtextid.getText());
+		Curso curso2 = ControllerCurso.insertarRegistro(curso);
 
 		if (curso2 != null) {
 			jtextid.setText(Integer.toString(curso.getId()));
@@ -217,6 +219,7 @@ public class PanelCurso extends JPanel {
 		}
 		
 	}
+	
 	
 	
 	/**
@@ -249,6 +252,7 @@ public class PanelCurso extends JPanel {
 	}
 	
 	
+	
 	/**
 	 * 
 	 */
@@ -264,6 +268,7 @@ public class PanelCurso extends JPanel {
 		}
 		
 	}
+	
 	
 	
 	/**
@@ -282,6 +287,7 @@ public class PanelCurso extends JPanel {
 
 	}
 
+	
 	
 	/**
 	 * 
