@@ -3,6 +3,7 @@ package Controllers;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
 
 import Model.Curso;
@@ -161,8 +162,18 @@ public class ControllerCurso {
 			conn = Controllers.ConnectionManagerV1.getConexion();
 			java.sql.Statement st = conn.createStatement();
 
-			st.executeUpdate("INSERT INTO centroeducativo.curso (id, descripcion)"
-					+ "VALUES ("+curso.getId()+",'"+curso.getDescripcion()+"');");
+			try {
+				
+				st.executeUpdate("INSERT INTO centroeducativo.curso (id, descripcion)"
+						+ "VALUES ("+curso.getId()+",'"+curso.getDescripcion()+"');");
+				
+			} catch (SQLIntegrityConstraintViolationException e) {
+				// Si lanza un error de primary key duplicada al insertar hace un update en lugar de un insert
+				// para que se pueda modificar el registro sin tener que meter un nuevo id
+				st.executeUpdate("UPDATE centroeducativo.curso "
+						+ "SET descripcion = '"+curso.getDescripcion()+"' "
+								+ "WHERE id = "+curso.getId()+" ;");
+			}
 
 			
 			st.close();
@@ -217,21 +228,19 @@ public class ControllerCurso {
 			conn = Controllers.ConnectionManagerV1.getConexion();
 			java.sql.Statement st = conn.createStatement();
 			
-			int id = Integer.parseInt(valor);
 			
-			// MIRAR
-			if (curso.getId() == id) {
-				
-				st.executeUpdate("UPDATE centroeducativo.curso "
-						+ "SET descripcion = '"+curso.getDescripcion()+"' WHERE id = "+curso.getId()+" ;");
-				
-			} else {
+			try {
 				
 				st.executeUpdate("INSERT INTO centroeducativo.curso (id, descripcion)"
 						+ "VALUES ("+curso.getId()+",'"+curso.getDescripcion()+"');");
 				
+			} catch (SQLIntegrityConstraintViolationException e) {
+				// Si lanza un error de primary key duplicada al insertar hace un update en lugar de un insert
+				// para que se pueda modificar el registro sin tener que meter un nuevo id
+				st.executeUpdate("UPDATE centroeducativo.curso "
+						+ "SET descripcion = '"+curso.getDescripcion()+"' "
+								+ "WHERE id = "+curso.getId()+" ;");
 			}
-				
 			
 			
 			st.close();
