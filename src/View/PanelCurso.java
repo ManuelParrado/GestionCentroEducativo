@@ -34,7 +34,6 @@ public class PanelCurso extends JPanel {
 	private JButton btnGuardar;
 	private JButton btnModificar;
 	private JButton btnEliminar;
-	private JButton btnInsertar;
 	
 	
 	public PanelCurso() {
@@ -48,7 +47,7 @@ public class PanelCurso extends JPanel {
 //		gbl_contentPane.rowWeights = new double[]{0.0, Double.MIN_VALUE};
 		this.setLayout(gbl_contentPane);
 		
-		lblNewLabel_1 = new JLabel(" Gestión de cursos");
+		lblNewLabel_1 = new JLabel(" Gestión de Cursos");
 		lblNewLabel_1.setFont(new Font("Tahoma", Font.BOLD, 17));
 		GridBagConstraints gbc_lblNewLabel_1 = new GridBagConstraints();
 		gbc_lblNewLabel_1.gridwidth = 2;
@@ -75,6 +74,7 @@ public class PanelCurso extends JPanel {
 		gbc_jtextid.gridy = 1;
 		this.add(jtextid, gbc_jtextid);
 		jtextid.setColumns(10);
+		jtextid.setEnabled(false);
 		
 		JLabel lblNewLabel = new JLabel(" Descripcion:");
 		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 13));
@@ -163,16 +163,6 @@ public class PanelCurso extends JPanel {
 		panel.add(btnModificar);
 		panel.add(btnGuardar);
 		
-		btnInsertar = new JButton("Insertar");
-		btnInsertar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-				insertarRegistro();
-				
-			}
-		});
-		panel.add(btnInsertar);
-		
 		btnEliminar = new JButton("Eliminar");
 		btnEliminar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -187,21 +177,6 @@ public class PanelCurso extends JPanel {
 	}
 	
 	
-	
-	/**
-	 * 
-	 */
-	private void insertarRegistro() {
-		
-		Curso curso = new Curso(Integer.parseInt(this.jtextid.getText()), this.jdescripcion.getText());
-
-		int affected = ControllerCurso.insertarRegistro(curso);
-		
-		compruebaAffected(affected);
-		
-	}
-	
-	
 	/**
 	 * 
 	 */
@@ -212,6 +187,7 @@ public class PanelCurso extends JPanel {
 		int affected = ControllerCurso.guardarRegistro(curso);
 		
 		compruebaAffected(affected);
+		cargarPrimerRegistro();
 		
 	}
 	
@@ -305,12 +281,19 @@ public class PanelCurso extends JPanel {
 		
 	}
 	
+	
+	/**
+	 * 
+	 * @param affected
+	 */
 	private void compruebaAffected(int affected) {
 		
 		if (affected == 1) {
-			JOptionPane.showInternalMessageDialog(null, "Han afectado sido afectadas "+affected+" filas");
+			JOptionPane.showInternalMessageDialog(null, 
+					"Han sido afectadas "+affected+" filas");
 		} else {
-			JOptionPane.showInternalMessageDialog(null, "Error, no se ha modicado ningun registro");
+			JOptionPane.showInternalMessageDialog(null, 
+					"Error, no se ha modicado ningun registro");
 		}
 		
 	}

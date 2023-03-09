@@ -13,16 +13,17 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import Controllers.ControllerCurso;
 import Controllers.ControllerMateria;
-import Model.Curso;
+import Controllers.ControllerValoracionMateria;
 import Model.Materia;
+import Model.ValoracionMateria;
+
 import javax.swing.JComboBox;
 
-public class PanelMateria extends JPanel {
-	
+public class PanelValoracionMateria extends JPanel {
+
 	private JTextField jtextid;
-	private JTextField jnombre;
+	private JTextField jvaloracion;
 	private JLabel lblNewLabel_1;
 	private JPanel panel;
 	private JButton btnPrimero;
@@ -32,12 +33,14 @@ public class PanelMateria extends JPanel {
 	private JButton btnGuardar;
 	private JButton btnModificar;
 	private JButton btnEliminar;
-	private JLabel lblAcrnimo;
-	private JTextField jacronimo;
-	private JLabel lblIdcurso;
-	private JComboBox comboCurso;
+	private JComboBox comboProfesor;
+	private JComboBox comboEstudiante;
+	private JComboBox comboMateria;
+	private JLabel lblNewLabel_2;
+	private JLabel lblNewLabel_3;
+	private JLabel lblNewLabel_4;
 	
-	public PanelMateria() {
+	public PanelValoracionMateria() {
 		
 		GridBagLayout gbl_contentPane = new GridBagLayout();
 		gbl_contentPane.columnWeights = new double[]{0.0, 1.0};
@@ -49,7 +52,7 @@ public class PanelMateria extends JPanel {
 //		gbl_contentPane.rowWeights = new double[]{0.0, Double.MIN_VALUE};
 		this.setLayout(gbl_contentPane);
 		
-		lblNewLabel_1 = new JLabel(" Gestión de Materias");
+		lblNewLabel_1 = new JLabel(" Gestión de Valoracion Materia");
 		lblNewLabel_1.setFont(new Font("Tahoma", Font.BOLD, 17));
 		GridBagConstraints gbc_lblNewLabel_1 = new GridBagConstraints();
 		gbc_lblNewLabel_1.gridwidth = 2;
@@ -78,58 +81,74 @@ public class PanelMateria extends JPanel {
 		jtextid.setColumns(10);
 		jtextid.setEnabled(false);
 		
-		JLabel lblNewLabel = new JLabel("Nombre");
+		lblNewLabel_2 = new JLabel("IdProfesor");
+		lblNewLabel_2.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		GridBagConstraints gbc_lblNewLabel_2 = new GridBagConstraints();
+		gbc_lblNewLabel_2.insets = new Insets(0, 0, 5, 5);
+		gbc_lblNewLabel_2.anchor = GridBagConstraints.EAST;
+		gbc_lblNewLabel_2.gridx = 0;
+		gbc_lblNewLabel_2.gridy = 2;
+		add(lblNewLabel_2, gbc_lblNewLabel_2);
+		
+		comboProfesor = new JComboBox();
+		GridBagConstraints gbc_comboProfesor = new GridBagConstraints();
+		gbc_comboProfesor.insets = new Insets(0, 0, 5, 0);
+		gbc_comboProfesor.fill = GridBagConstraints.HORIZONTAL;
+		gbc_comboProfesor.gridx = 1;
+		gbc_comboProfesor.gridy = 2;
+		add(comboProfesor, gbc_comboProfesor);
+		
+		lblNewLabel_3 = new JLabel("IdEstudiante");
+		lblNewLabel_3.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		GridBagConstraints gbc_lblNewLabel_3 = new GridBagConstraints();
+		gbc_lblNewLabel_3.insets = new Insets(0, 0, 5, 5);
+		gbc_lblNewLabel_3.anchor = GridBagConstraints.EAST;
+		gbc_lblNewLabel_3.gridx = 0;
+		gbc_lblNewLabel_3.gridy = 3;
+		add(lblNewLabel_3, gbc_lblNewLabel_3);
+		
+		comboEstudiante = new JComboBox();
+		GridBagConstraints gbc_comboEstudiante = new GridBagConstraints();
+		gbc_comboEstudiante.insets = new Insets(0, 0, 5, 0);
+		gbc_comboEstudiante.fill = GridBagConstraints.HORIZONTAL;
+		gbc_comboEstudiante.gridx = 1;
+		gbc_comboEstudiante.gridy = 3;
+		add(comboEstudiante, gbc_comboEstudiante);
+		
+		lblNewLabel_4 = new JLabel("IdMateria");
+		lblNewLabel_4.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		GridBagConstraints gbc_lblNewLabel_4 = new GridBagConstraints();
+		gbc_lblNewLabel_4.insets = new Insets(0, 0, 5, 5);
+		gbc_lblNewLabel_4.anchor = GridBagConstraints.EAST;
+		gbc_lblNewLabel_4.gridx = 0;
+		gbc_lblNewLabel_4.gridy = 4;
+		add(lblNewLabel_4, gbc_lblNewLabel_4);
+		
+		comboMateria = new JComboBox();
+		GridBagConstraints gbc_comboMateria = new GridBagConstraints();
+		gbc_comboMateria.insets = new Insets(0, 0, 5, 0);
+		gbc_comboMateria.fill = GridBagConstraints.HORIZONTAL;
+		gbc_comboMateria.gridx = 1;
+		gbc_comboMateria.gridy = 4;
+		add(comboMateria, gbc_comboMateria);
+		
+		JLabel lblNewLabel = new JLabel("Valoración");
 		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
 		gbc_lblNewLabel.anchor = GridBagConstraints.EAST;
 		gbc_lblNewLabel.insets = new Insets(0, 0, 5, 5);
 		gbc_lblNewLabel.gridx = 0;
-		gbc_lblNewLabel.gridy = 2;
+		gbc_lblNewLabel.gridy = 5;
 		this.add(lblNewLabel, gbc_lblNewLabel);
 		
-		jnombre = new JTextField();
-		GridBagConstraints gbc_jnombre = new GridBagConstraints();
-		gbc_jnombre.insets = new Insets(0, 0, 5, 0);
-		gbc_jnombre.fill = GridBagConstraints.HORIZONTAL;
-		gbc_jnombre.gridx = 1;
-		gbc_jnombre.gridy = 2;
-		this.add(jnombre, gbc_jnombre);
-		jnombre.setColumns(10);
-		
-		lblAcrnimo = new JLabel("Acrónimo");
-		lblAcrnimo.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		GridBagConstraints gbc_lblAcrnimo = new GridBagConstraints();
-		gbc_lblAcrnimo.anchor = GridBagConstraints.EAST;
-		gbc_lblAcrnimo.insets = new Insets(0, 0, 5, 5);
-		gbc_lblAcrnimo.gridx = 0;
-		gbc_lblAcrnimo.gridy = 3;
-		add(lblAcrnimo, gbc_lblAcrnimo);
-		
-		jacronimo = new JTextField();
-		jacronimo.setColumns(10);
-		GridBagConstraints gbc_jacronimo = new GridBagConstraints();
-		gbc_jacronimo.insets = new Insets(0, 0, 5, 0);
-		gbc_jacronimo.fill = GridBagConstraints.HORIZONTAL;
-		gbc_jacronimo.gridx = 1;
-		gbc_jacronimo.gridy = 3;
-		add(jacronimo, gbc_jacronimo);
-		
-		lblIdcurso = new JLabel("Id_Curso");
-		lblIdcurso.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		GridBagConstraints gbc_lblIdcurso = new GridBagConstraints();
-		gbc_lblIdcurso.anchor = GridBagConstraints.EAST;
-		gbc_lblIdcurso.insets = new Insets(0, 0, 5, 5);
-		gbc_lblIdcurso.gridx = 0;
-		gbc_lblIdcurso.gridy = 4;
-		add(lblIdcurso, gbc_lblIdcurso);
-		
-		comboCurso = new JComboBox();
-		GridBagConstraints gbc_comboCurso = new GridBagConstraints();
-		gbc_comboCurso.insets = new Insets(0, 0, 5, 0);
-		gbc_comboCurso.fill = GridBagConstraints.HORIZONTAL;
-		gbc_comboCurso.gridx = 1;
-		gbc_comboCurso.gridy = 4;
-		add(comboCurso, gbc_comboCurso);
+		jvaloracion = new JTextField();
+		GridBagConstraints gbc_jvaloracion = new GridBagConstraints();
+		gbc_jvaloracion.insets = new Insets(0, 0, 5, 0);
+		gbc_jvaloracion.fill = GridBagConstraints.HORIZONTAL;
+		gbc_jvaloracion.gridx = 1;
+		gbc_jvaloracion.gridy = 5;
+		this.add(jvaloracion, gbc_jvaloracion);
+		jvaloracion.setColumns(10);
 		
 		panel = new JPanel();
 		GridBagConstraints gbc_panel = new GridBagConstraints();
@@ -137,7 +156,7 @@ public class PanelMateria extends JPanel {
 		gbc_panel.gridwidth = 2;
 		gbc_panel.fill = GridBagConstraints.BOTH;
 		gbc_panel.gridx = 0;
-		gbc_panel.gridy = 5;
+		gbc_panel.gridy = 6;
 		this.add(panel, gbc_panel);
 		
 		btnPrimero = new JButton("<<");
@@ -192,8 +211,7 @@ public class PanelMateria extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				
 				jtextid.setText("0");
-				jnombre.setText("");
-				jacronimo.setText("");
+				jvaloracion.setText("");
 				
 			}
 		});
@@ -210,68 +228,44 @@ public class PanelMateria extends JPanel {
 		});
 		panel.add(btnEliminar);
 		cargarPrimerRegistro();
-	
-
+		
 	}
 	
-	
+	/**
+	 * 
+	 */
 	private void cargarPrimerRegistro() {
 		
-		Materia mat = new ControllerMateria().cargarPrimerRegistro();
+		ValoracionMateria valmat = new ControllerValoracionMateria().cargarPrimerRegistro();
 		
-		if (mat != null) {
+		if (valmat != null) {
 		
-			jtextid.setText(Integer.toString(mat.getId()));
-			jnombre.setText(mat.getNombre());
-			jacronimo.setText(mat.getAcronimo());
-			//Jcombo
+			jtextid.setText(Integer.toString(valmat.getId()));
+			//ComboProfesor
+			//ComboEstudiante
+			//ComboMateria
+			jvaloracion.setText(Float.toString(valmat.getValoracion()));
+
 			
 		}
 	}
 	
+	
+	/**
+	 * 
+	 */
 	private void ultimoRegistro() {
 		
-		Materia mat = new ControllerMateria().cargarUltimoRegistro();
+		ValoracionMateria valmat = new ControllerValoracionMateria().cargarUltimoRegistro();
 
-		if (mat != null) {
+		if (valmat != null) {
 
-			jtextid.setText(Integer.toString(mat.getId()));
-			jnombre.setText(mat.getNombre());
-			jacronimo.setText(mat.getAcronimo());
-			// Jcombo
+			jtextid.setText(Integer.toString(valmat.getId()));
+			//ComboProfesor
+			//ComboEstudiante
+			//ComboMateria
+			jvaloracion.setText(Float.toString(valmat.getValoracion()));
 
-		}
-		
-	}
-	
-	private void siguienteRegistro() {
-		
-		Materia mat = new Materia(Integer.parseInt(this.jtextid.getText()), 
-				this.jnombre.getText(), this.jacronimo.getText(), 0);
-
-		Materia mat2 = ControllerMateria.siguienteRegistro(mat);
-
-		if (mat2 != null) {
-			jtextid.setText(Integer.toString(mat.getId()));
-			jnombre.setText(mat.getNombre());
-			jacronimo.setText(mat.getAcronimo());
-			//jcombo
-		}
-		
-	}
-	
-	private void anteriorRegistro() {
-		
-		Materia mat = new Materia(Integer.parseInt(this.jtextid.getText()), 
-				this.jnombre.getText(), this.jacronimo.getText(), 0);
-
-		Materia mat2 = ControllerMateria.anteriorRegistro(mat);
-
-		if (mat2 != null) {
-			jtextid.setText(Integer.toString(mat.getId()));
-			jnombre.setText(mat.getNombre());
-			jacronimo.setText(mat.getAcronimo());
-			//jcombo
 		}
 		
 	}
@@ -279,11 +273,57 @@ public class PanelMateria extends JPanel {
 	/**
 	 * 
 	 */
+	private void siguienteRegistro() {
+		
+		ValoracionMateria valmat = new ValoracionMateria(
+				Integer.parseInt(this.jtextid.getText()), 
+				0, 0, 0,Float.parseFloat(this.jvaloracion.getText()));
+
+		ValoracionMateria valmat2 = ControllerValoracionMateria.siguienteRegistro(valmat);
+
+		if (valmat2 != null) {
+			jtextid.setText(Integer.toString(valmat.getId()));
+			//ComboProfesor
+			//ComboEstudiante
+			//ComboMateria
+			jvaloracion.setText(Float.toString(valmat.getValoracion()));
+		}
+		
+	}
+	
+	
+	/**
+	 * 
+	 */
+	private void anteriorRegistro() {
+
+		ValoracionMateria valmat = new ValoracionMateria(
+				Integer.parseInt(this.jtextid.getText()), 
+				0, 0, 0,Float.parseFloat(this.jvaloracion.getText()));
+
+		ValoracionMateria valmat2 = ControllerValoracionMateria.anteriorRegistro(valmat);
+
+		if (valmat2 != null) {
+			jtextid.setText(Integer.toString(valmat.getId()));
+			//ComboProfesor
+			//ComboEstudiante
+			//ComboMateria
+			jvaloracion.setText(Float.toString(valmat.getValoracion()));
+		}
+
+	}
+	
+	
+	/**
+	 * 
+	 */
 	private void guardarRegistro() {
 
-		Materia mat = new Materia(Integer.parseInt(this.jtextid.getText()), this.jnombre.getText(), this.jacronimo.getText(), 0);
+		ValoracionMateria valmat = new ValoracionMateria(
+				Integer.parseInt(this.jtextid.getText()), 
+				0, 0, 0,Float.parseFloat(this.jvaloracion.getText()));
 
-		int affected = ControllerMateria.guardarRegistro(mat);
+		int affected = ControllerValoracionMateria.guardarRegistro(valmat);
 
 		compruebaAffected(affected);
 		cargarPrimerRegistro();
@@ -298,9 +338,11 @@ public class PanelMateria extends JPanel {
 		
 		if (JOptionPane.showConfirmDialog(null, "¿Seguro que quiere eliminar?") == JOptionPane.YES_OPTION) {
 			
-			Materia mat = new Materia(Integer.parseInt(this.jtextid.getText()), this.jnombre.getText(), this.jacronimo.getText(), 0);
+			ValoracionMateria valmat = new ValoracionMateria(
+					Integer.parseInt(this.jtextid.getText()), 
+					0, 0, 0,Float.parseFloat(this.jvaloracion.getText()));
 
-			int affected = ControllerMateria.eliminarRegistro(mat);
+			int affected = ControllerValoracionMateria.eliminarRegistro(valmat);
 			
 			compruebaAffected(affected);
 			
@@ -327,7 +369,5 @@ public class PanelMateria extends JPanel {
 		}
 		
 	}
-	
-	
 
 }

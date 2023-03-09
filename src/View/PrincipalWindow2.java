@@ -25,6 +25,10 @@ public class PrincipalWindow2 extends JFrame {
 		
 		tabedPane.add("Materia", new PanelMateria());
 		
+		tabedPane.add("Estudiante", new PanelEstudiante());
+		
+		tabedPane.add("Valoracion Materia", new PanelValoracionMateria());
+		
 		this.setContentPane(tabedPane);
 	}
 	
