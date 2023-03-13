@@ -1,92 +1,65 @@
 package Controllers;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 
 import Model.ValoracionMateria;
 
 public class ControllerValoracionMateria {
 
-	private static Connection conn = null;
-	
 	/**
 	 * 
+	 * @param rs
+	 * @return
 	 */
-	public ValoracionMateria cargarPrimerRegistro() {
-		
-		ValoracionMateria valmat = null;
-		
+	private static ValoracionMateria getEntidadFromResultSet(String sql) {
+		ValoracionMateria var = null;
 		try {
+			Connection conn = ConnectionManagerV1.getConexion();
+			Statement st = conn.createStatement();
 			
-			conn = Controllers.ConnectionManagerV1.getConexion();
-			java.sql.Statement st = conn.createStatement();
-			
-			ResultSet rs = st.executeQuery("SELECT * FROM centroeducativo.valoracionmateria"
-					+ " order by id limit 1");
-			
-			if(rs.next()) {
-				
-				valmat = new ValoracionMateria();
-				
-				valmat.setId(rs.getInt(1));
-				//ComboProfesor
-				//ComboEstudiante
-				//ComboMateria
-				valmat.setValoracion(rs.getFloat(5));
-				
+			ResultSet rs = st.executeQuery(sql);
+
+			if (rs != null && rs.next()) {
+				var = new ValoracionMateria();
+				var.setId(rs.getInt("id"));
+				var.setIdProfesor(rs.getInt("idProfesor"));
+				var.setIdEstudiante(rs.getInt("idEstudiante"));
+				var.setIdMateria(rs.getInt("idMateria"));
+				var.setValoracion(rs.getFloat("valoracion"));
 			}
-			
-			st.close();
 			rs.close();
-			return valmat;
-			
+			st.close();
+			conn.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		
-		return null;
+		return var;
 	}
-	
 	
 	/**
 	 * 
 	 * @return
 	 */
-	public ValoracionMateria cargarUltimoRegistro() {
+	public static ValoracionMateria cargarPrimerRegistro() {
+		return getEntidadFromResultSet(
+				"SELECT * FROM centroeducativo.valoracionmateria order by id limit 1");
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public static ValoracionMateria cargarUltimoRegistro() {
 
-		ValoracionMateria valmat = null;
-
-		try {
-
-			conn = ConnectionManagerV1.getConexion();
-			java.sql.Statement st = conn.createStatement();
-
-			ResultSet rs = st.executeQuery("SELECT * FROM centroeducativo.valoracionmateria\r\n"
-					+ "WHERE id = (SELECT MAX(id) FROM centroeducativo.valoracionmateria);");
-
-			if (rs.next()) {
-
-				valmat = new ValoracionMateria();
-
-				valmat.setId(rs.getInt(1));
-				//ComboProfesor
-				//ComboEstudiante
-				//ComboMateria
-				valmat.setValoracion(rs.getFloat(5));
-				
-
-			}
-
-			st.close();
-			rs.close();
-			return valmat;
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return null;
+		return getEntidadFromResultSet(
+				"SELECT * FROM centroeducativo.valoracionmateria order by id desc limit 1");
+		
 	}
 	
 	
@@ -95,117 +68,82 @@ public class ControllerValoracionMateria {
 	 * @param curso
 	 * @return
 	 */
-	public static ValoracionMateria siguienteRegistro(ValoracionMateria valmat) {
+	public static ValoracionMateria siguienteRegistro(int actualId) {
 		
-		
-		try {
-			
-			conn = Controllers.ConnectionManagerV1.getConexion();
-			java.sql.Statement st = conn.createStatement();
-
-			ResultSet rs = st.executeQuery("select * from valoracionmateria "
-					+ "where id > "+valmat.getId()+" "
-							+ "order by id limit 1");
-
-			if (rs.next()) {
-				
-				valmat.setId(rs.getInt(1));
-				//ComboProfesor
-				//ComboEstudiante
-				//ComboMateria
-				valmat.setValoracion(rs.getFloat(5));
-
-			}
-
-			st.close();
-			rs.close();
-			return valmat;
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+		return getEntidadFromResultSet(
+				"select * from valoracionmateria where id > "+ actualId +" order by id limit 1");
 	
+	}
 	
 	/**
 	 * 
 	 * @param curso
 	 * @return
 	 */
-	public static ValoracionMateria anteriorRegistro(ValoracionMateria valmat) {
-
-		try {
-
-			conn = Controllers.ConnectionManagerV1.getConexion();
-			java.sql.Statement st = conn.createStatement();
-
-			ResultSet rs = st.executeQuery("SELECT *\r\n"
-					+ "FROM centroeducativo.valoracionmateria\r\n"
-					+ "WHERE id = (SELECT MAX(id) FROM centroeducativo.valoracionmateria "
-					+ "WHERE id < "+valmat.getId()+");");
-
-			if (rs.next()) {
-
-				valmat.setId(rs.getInt(1));
-				//ComboProfesor
-				//ComboEstudiante
-				//ComboMateria
-				valmat.setValoracion(rs.getFloat(5));
-
-			}
-
-			st.close();
-			rs.close();
-			return valmat;
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+	public static ValoracionMateria anteriorRegistro(int actualId) {
+		
+		return getEntidadFromResultSet(
+				"SELECT * FROM centroeducativo.valoracionmateria where id < " + actualId + " order by id desc limit 1");
 	
+	}
 	
 	/**
 	 * 
-	 * @param curso
+	 * @param c
 	 * @return
 	 */
-	public static int guardarRegistro(ValoracionMateria valmat) {
-		
-		int afected;
+	public static int modificar (ValoracionMateria var) {
 		
 		try {
-
-			conn = Controllers.ConnectionManagerV1.getConexion();
-			java.sql.Statement st = conn.createStatement();
-
-			
-			// Si el id es 0 quiere decir que se va a introducir un registro
-			// Si no es 0 quiere decir que se ha modificar
-			if (valmat.getId() == 0) {
-				afected = st.executeUpdate("INSERT INTO centroeducativo.valoracionmateria "
-						+ "(id, idProfesor, idEstudiante, idMateria, valoracion) "
-						+ "VALUES ("+getID()+", 1, 1, 1, '"+valmat.getValoracion()+"');");
-			} else {
-				afected = st.executeUpdate("UPDATE centroeducativo.valoracionmateria "
-						+ "SET idProfesor = 1, "
-						+ "idEstudiante = 1, idMateria = 1, "
-						+ "valoracion = '"+valmat.getValoracion()+"'"
-						+ "WHERE id = "+valmat.getId()+";");	
-			}
-
-			
-			st.close();
-			
-			return afected;
-
+			Connection conn = ConnectionManagerV1.getConexion();
+			PreparedStatement ps = conn.prepareStatement(
+					"update valoracionmateria set idProfesor = ?, "
+					+ "idEstudiante = ?, idMateria = ?, valoracion = ? where id = ?");
+		
+			ps.setInt(1, var.getIdProfesor());
+			ps.setInt(2, var.getIdEstudiante());
+			ps.setInt(3, var.getIdMateria());
+			ps.setFloat(4, var.getValoracion());
+			ps.setInt(5, var.getId());
+			int rows = ps.executeUpdate();
+			ps.close();
+			conn.close();
+			return rows;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return 0;
+	}
+	
+	
+	/**
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public static int insertar (ValoracionMateria var) {
 		
+		try {
+			Connection conn = ConnectionManagerV1.getConexion();
+			PreparedStatement ps = conn.prepareStatement(
+					"insert into valoracionmateria (id, idProfesor, "
+					+ "idEstudiante, idMateria, valoracion) "
+						+ " values (?, ?, ?, ?, ?)");
 		
+			int siguienteIdValido = getSiguientIdValido();
+			ps.setInt(1, siguienteIdValido);
+			ps.setInt(2, var.getIdProfesor());
+			ps.setInt(3, var.getIdEstudiante());
+			ps.setInt(4, var.getIdMateria());
+			ps.setFloat(5, var.getValoracion());
+			ps.executeUpdate();
+			ps.close();
+			conn.close();
+			return siguienteIdValido;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
 	}
 	
 	/**
@@ -213,22 +151,18 @@ public class ControllerValoracionMateria {
 	 * @param curso
 	 * @return
 	 */
-	public static int eliminarRegistro(ValoracionMateria valmat) {
-		
-		int afected;
-		
+	public static int eliminarRegistro(int id) {
+
 		try {
-
-			conn = Controllers.ConnectionManagerV1.getConexion();
-			java.sql.Statement st = conn.createStatement();
-
-			afected = st.executeUpdate("DELETE FROM centroeducativo.valoracionmateria "
-					+ "WHERE id = "+valmat.getId()+";");
-
-			st.close();
-			
-			return afected;
-
+			Connection conn = ConnectionManagerV1.getConexion();
+			PreparedStatement ps = conn.prepareStatement(
+					"delete from valoracionmateria where id = ?");
+		
+			ps.setInt(1, id);
+			int rows = ps.executeUpdate();
+			ps.close();
+			conn.close();
+			return rows;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -241,10 +175,25 @@ public class ControllerValoracionMateria {
 	 * 
 	 * @return
 	 */
-	private static int getID() {
-        int c = new ControllerValoracionMateria().cargarUltimoRegistro().getId() + 1;
-        return c;
-    }
+	private static int getSiguientIdValido () {
+		try {
+			Connection conn = ConnectionManagerV1.getConexion();
+			PreparedStatement ps = conn.prepareStatement(
+					"select max(id) from valoracionmateria");
+		
+			ResultSet rs = ps.executeQuery();
+			if (rs.next()) {
+				int maximoIdActual = rs.getInt(1);
+				return maximoIdActual + 1;
+			}
+			
+			ps.close();
+			conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
 	
 	
 }

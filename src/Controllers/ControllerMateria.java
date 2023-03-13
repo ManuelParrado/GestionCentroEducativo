@@ -1,12 +1,17 @@
 package Controllers;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import Model.Curso;
 import Model.Materia;
+import tutorialJava.capitulo9_AWT_SWING.ejemplos.ejemploMVC.ConnectionManager;
 
 public class ControllerMateria {
 	
@@ -17,74 +22,80 @@ public class ControllerMateria {
 	 * 
 	 * @return
 	 */
-	public Materia cargarPrimerRegistro() {
+	public static List<Materia> findAll() {
+		List<Materia> materias = new ArrayList<Materia>();
 		
-		Materia mat = null;
-
 		try {
-
-			conn = Controllers.ConnectionManagerV1.getConexion();
-			java.sql.Statement st = conn.createStatement();
-
-			ResultSet rs = st.executeQuery("SELECT * FROM centroeducativo.materia order by id limit 1");
-
-			if (rs.next()) {
-
-				mat = new Materia();
-
-				mat.setId(rs.getInt(1));
-				mat.setNombre(rs.getNString(2));
-				mat.setAcronimo(rs.getString(3));
-				//JCombo
-
+			Connection conn = ConnectionManagerV1.getConexion();
+			Statement st = conn.createStatement();
+			ResultSet rs = st.executeQuery("select * from materia");
+			
+			while (rs.next()) {
+				Materia materia = new Materia();
+				materia.setId(rs.getInt("id"));
+				materia.setNombre(rs.getString("nombre"));
+				materia.setAcronimo(rs.getString("acronimo"));
+				materia.setCurso_id(rs.getInt("curso_id"));
+				materias.add(materia);
 			}
+			
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		
+		return materias;
+	}
+	
+	/**
+	 * 
+	 * @param rs
+	 * @return
+	 */
+	private static Materia getEntidadFromResultSet(String sql) {
+		Materia materia = null;
+		try {
+			Connection conn = ConnectionManagerV1.getConexion();
+			Statement st = conn.createStatement();
+			
+			ResultSet rs = st.executeQuery(sql);
 
-			st.close();
+			if (rs != null && rs.next()) {
+				materia = new Materia();
+				materia.setId(rs.getInt("id"));
+				materia.setNombre(rs.getString("nombre"));
+				materia.setAcronimo(rs.getString("acronimo"));
+				materia.setCurso_id(rs.getInt("curso_id"));
+			}
 			rs.close();
-			return mat;
-
+			st.close();
+			conn.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		
-		return null;
+		return materia;
+	}
+	
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public static Materia cargarPrimerRegistro() {
+		return getEntidadFromResultSet(
+				"SELECT * FROM centroeducativo.materia order by id limit 1");
 	}
 	
 	/**
 	 * 
 	 * @return
 	 */
-	public Materia cargarUltimoRegistro() {
+	public static Materia cargarUltimoRegistro() {
 
-		Materia mat = null;
-
-		try {
-
-			conn = ConnectionManagerV1.getConexion();
-			java.sql.Statement st = conn.createStatement();
-
-			ResultSet rs = st.executeQuery("SELECT * FROM centroeducativo.materia\r\n"
+		return getEntidadFromResultSet("SELECT * FROM centroeducativo.materia\r\n"
 					+ "WHERE id = (SELECT MAX(id) FROM centroeducativo.materia);");
-
-			if (rs.next()) {
-
-				mat = new Materia();
-
-				mat.setId(rs.getInt(1));
-				mat.setNombre(rs.getNString(2));
-				mat.setAcronimo(rs.getString(3));
-				//JCombo
-
-			}
-
-			st.close();
-			rs.close();
-			return mat;
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return null;
+		
 	}
 	
 	
@@ -93,110 +104,78 @@ public class ControllerMateria {
 	 * @param curso
 	 * @return
 	 */
-	public static Materia siguienteRegistro(Materia mat) {
+	public static Materia siguienteRegistro(int actualId) {
 		
-		
-		try {
-			
-			conn = Controllers.ConnectionManagerV1.getConexion();
-			java.sql.Statement st = conn.createStatement();
-
-			ResultSet rs = st.executeQuery("select * from materia where id > "+mat.getId()+" order by id limit 1");
-
-			if (rs.next()) {
-				
-				mat.setId(rs.getInt(1));
-				mat.setNombre(rs.getString(2));
-				mat.setAcronimo(rs.getNString(3));
-				//Jcombo
-
-			}
-
-			st.close();
-			rs.close();
-			return mat;
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+		return getEntidadFromResultSet(
+				"select * from materia where id > "+ actualId +" order by id limit 1");
 	
+	}
 	
 	/**
 	 * 
 	 * @param curso
 	 * @return
 	 */
-	public static Materia anteriorRegistro(Materia mat) {
-
-		try {
-
-			conn = Controllers.ConnectionManagerV1.getConexion();
-			java.sql.Statement st = conn.createStatement();
-
-			ResultSet rs = st.executeQuery("SELECT *\r\n"
-					+ "FROM centroeducativo.materia\r\n"
-					+ "WHERE id = (SELECT MAX(id) FROM centroeducativo.materia WHERE id < "+mat.getId()+");");
-
-			if (rs.next()) {
-
-				mat.setId(rs.getInt(1));
-				mat.setNombre(rs.getString(2));
-				mat.setAcronimo(rs.getNString(3));
-				//Jcombo
-
-			}
-
-			st.close();
-			rs.close();
-			return mat;
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+	public static Materia anteriorRegistro(int actualId) {
+		
+		return getEntidadFromResultSet(
+				"SELECT * FROM centroeducativo.materia where id < " + actualId + " order by id desc limit 1");
 	
+	}
 	
 	
 	/**
 	 * 
-	 * @param curso
+	 * @param c
 	 * @return
 	 */
-	public static int guardarRegistro(Materia mat) {
-		
-		int afected;
+	public static int modificar (Materia m) {
 		
 		try {
-
-			conn = Controllers.ConnectionManagerV1.getConexion();
-			java.sql.Statement st = conn.createStatement();
-
-			
-			// Si el id es 0 quiere decir que se va a introducir un registro
-			// Si no es 0 quiere decir que se ha modificar
-			if (mat.getId() == 0) {
-				afected = st.executeUpdate("INSERT INTO centroeducativo.materia (id, nombre, acronimo, curso_id)"
-						+ "VALUES ("+getID()+",'"+mat.getNombre()+"','"+mat.getAcronimo()+"', 1);");
-			} else {
-				afected = st.executeUpdate("UPDATE centroeducativo.materia SET nombre = '"+mat.getNombre()+"', "
-						+ "acronimo = '"+mat.getAcronimo()+"', curso_id = 1 "
-								+ "WHERE id = "+mat.getId()+";");	
-			}
-
-			
-			st.close();
-			
-			return afected;
-
+			Connection conn = ConnectionManagerV1.getConexion();
+			PreparedStatement ps = conn.prepareStatement(
+					"update materia set nombre = ?, acronimo = ?, curso_id = ? where id = ?");
+		
+			ps.setString(1, m.getNombre());
+			ps.setString(2, m.getAcronimo());
+			ps.setInt(3, m.getCurso_id());
+			ps.setInt(4, m.getId());
+			int rows = ps.executeUpdate();
+			ps.close();
+			conn.close();
+			return rows;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return 0;
+	}
+	
+	/**
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public static int insertar (Materia m) {
 		
+		try {
+			Connection conn = ConnectionManagerV1.getConexion();
+			PreparedStatement ps = conn.prepareStatement(
+					"insert into materia (id, nombre, acronimo, curso_id) "
+					+ " values (?, ?, ?, ?)");
 		
+			int siguienteIdValido = getSiguientIdValido();
+			ps.setInt(1, siguienteIdValido);
+			ps.setString(2, m.getNombre());
+			ps.setString(3, m.getAcronimo());
+			ps.setInt(4, m.getCurso_id());
+			ps.executeUpdate();
+			ps.close();
+			conn.close();
+			return siguienteIdValido;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
 	}
 	
 	/**
@@ -204,21 +183,18 @@ public class ControllerMateria {
 	 * @param curso
 	 * @return
 	 */
-	public static int eliminarRegistro(Materia mat) {
-		
-		int afected;
-		
+	public static int eliminarRegistro(int id) {
+
 		try {
-
-			conn = Controllers.ConnectionManagerV1.getConexion();
-			java.sql.Statement st = conn.createStatement();
-
-			afected = st.executeUpdate("DELETE FROM centroeducativo.materia WHERE id = "+mat.getId()+";");
-
-			st.close();
-			
-			return afected;
-
+			Connection conn = ConnectionManagerV1.getConexion();
+			PreparedStatement ps = conn.prepareStatement(
+					"delete from materia where id = ?");
+		
+			ps.setInt(1, id);
+			int rows = ps.executeUpdate();
+			ps.close();
+			conn.close();
+			return rows;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -227,14 +203,31 @@ public class ControllerMateria {
 	}
 	
 	
+
 	/**
 	 * 
 	 * @return
 	 */
-	private static int getID() {
-        int c = new ControllerMateria().cargarUltimoRegistro().getId() + 1;
-        return c;
-    }
+	private static int getSiguientIdValido () {
+		try {
+			Connection conn = ConnectionManagerV1.getConexion();
+			PreparedStatement ps = conn.prepareStatement(
+					"select max(id) from materia");
+		
+			ResultSet rs = ps.executeQuery();
+			if (rs.next()) {
+				int maximoIdActual = rs.getInt(1);
+				return maximoIdActual + 1;
+			}
+			
+			ps.close();
+			conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
 	
 
 }

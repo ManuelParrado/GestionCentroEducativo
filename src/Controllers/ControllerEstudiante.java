@@ -3,13 +3,50 @@ package Controllers;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import Model.Estudiante;
+import Model.Materia;
 
 
 public class ControllerEstudiante {
 
 	private static Connection conn = null;
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public static List<Estudiante> findAll() {
+		List<Estudiante> estudiantes = new ArrayList<Estudiante>();
+		
+		try {
+			Connection conn = ConnectionManagerV1.getConexion();
+			Statement st = conn.createStatement();
+			ResultSet rs = st.executeQuery("select * from estudiante");
+			
+			while (rs.next()) {
+				Estudiante estudiante = new Estudiante();
+				estudiante.setId(rs.getInt("id"));
+				estudiante.setNombre(rs.getNString("nombre"));
+				estudiante.setApellido1(rs.getNString("apellido1"));
+				estudiante.setApellido2(rs.getNString("apellido2"));
+				estudiante.setDni(rs.getString("dni"));
+				estudiante.setDireccion(rs.getNString("direccion"));
+				estudiante.setEmail(rs.getNString("email"));
+				estudiante.setTelefono(rs.getString("telefono"));
+				estudiantes.add(estudiante);
+			}
+			
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		
+		return estudiantes;
+	}
 	
 	/**
 	 * 
@@ -257,7 +294,7 @@ public class ControllerEstudiante {
 	 * @return
 	 */
 	private static int getID() {
-        int c = new ControllerValoracionMateria().cargarUltimoRegistro().getId() + 1;
+        int c = new ControllerEstudiante().cargarUltimoRegistro().getId() + 1;
         return c;
     }
 	

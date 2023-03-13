@@ -6,6 +6,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -17,6 +18,9 @@ import Controllers.ControllerCurso;
 import Controllers.ControllerMateria;
 import Model.Curso;
 import Model.Materia;
+import tutorialJava.capitulo9_AWT_SWING.ejemplos.ejemploJTabbedPane.controller.ControladorCurso;
+import tutorialJava.capitulo9_AWT_SWING.ejemplos.ejemploJTabbedPane.controller.ControladorMateria;
+
 import javax.swing.JComboBox;
 
 public class PanelMateria extends JPanel {
@@ -35,7 +39,7 @@ public class PanelMateria extends JPanel {
 	private JLabel lblAcrnimo;
 	private JTextField jacronimo;
 	private JLabel lblIdcurso;
-	private JComboBox comboCurso;
+	private JComboBox<Curso> comboCurso;
 	
 	public PanelMateria() {
 		
@@ -123,7 +127,7 @@ public class PanelMateria extends JPanel {
 		gbc_lblIdcurso.gridy = 4;
 		add(lblIdcurso, gbc_lblIdcurso);
 		
-		comboCurso = new JComboBox();
+		comboCurso = new JComboBox<Curso>();
 		GridBagConstraints gbc_comboCurso = new GridBagConstraints();
 		gbc_comboCurso.insets = new Insets(0, 0, 5, 0);
 		gbc_comboCurso.fill = GridBagConstraints.HORIZONTAL;
@@ -144,7 +148,7 @@ public class PanelMateria extends JPanel {
 		btnPrimero.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// Boton Primer Registro
-				cargarPrimerRegistro();
+				cargarEnPantalla(ControllerMateria.cargarPrimerRegistro());
 			}
 		});
 		panel.add(btnPrimero);
@@ -153,7 +157,8 @@ public class PanelMateria extends JPanel {
 		btnAnterior.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// Boton Anterior Registro
-				anteriorRegistro();
+				cargarEnPantalla(ControllerMateria.anteriorRegistro(
+						Integer.parseInt(jtextid.getText())));
 			}
 		});
 		panel.add(btnAnterior);
@@ -162,7 +167,8 @@ public class PanelMateria extends JPanel {
 		btnSiguiente.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// Boton Siguiente
-				siguienteRegistro();
+				cargarEnPantalla(ControllerMateria.siguienteRegistro(
+						Integer.parseInt(jtextid.getText())));
 				
 			}
 		});
@@ -172,7 +178,7 @@ public class PanelMateria extends JPanel {
 		btnUltimo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//Boton Ultimo Registro
-				ultimoRegistro();
+				cargarEnPantalla(ControllerMateria.cargarUltimoRegistro());
 				
 			}
 		});
@@ -190,10 +196,7 @@ public class PanelMateria extends JPanel {
 		btnModificar = new JButton("Nuevo");
 		btnModificar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
-				jtextid.setText("0");
-				jnombre.setText("");
-				jacronimo.setText("");
+				limpiarDatos();
 				
 			}
 		});
@@ -209,6 +212,8 @@ public class PanelMateria extends JPanel {
 			}
 		});
 		panel.add(btnEliminar);
+		
+		cargarCursosEnJCombo();
 		cargarPrimerRegistro();
 	
 
@@ -216,77 +221,51 @@ public class PanelMateria extends JPanel {
 	
 	
 	private void cargarPrimerRegistro() {
-		
-		Materia mat = new ControllerMateria().cargarPrimerRegistro();
-		
-		if (mat != null) {
-		
-			jtextid.setText(Integer.toString(mat.getId()));
-			jnombre.setText(mat.getNombre());
-			jacronimo.setText(mat.getAcronimo());
-			//Jcombo
-			
-		}
-	}
-	
-	private void ultimoRegistro() {
-		
-		Materia mat = new ControllerMateria().cargarUltimoRegistro();
-
-		if (mat != null) {
-
-			jtextid.setText(Integer.toString(mat.getId()));
-			jnombre.setText(mat.getNombre());
-			jacronimo.setText(mat.getAcronimo());
-			// Jcombo
-
-		}
+		cargarEnPantalla(ControllerMateria.cargarPrimerRegistro());
 		
 	}
 	
-	private void siguienteRegistro() {
-		
-		Materia mat = new Materia(Integer.parseInt(this.jtextid.getText()), 
-				this.jnombre.getText(), this.jacronimo.getText(), 0);
-
-		Materia mat2 = ControllerMateria.siguienteRegistro(mat);
-
-		if (mat2 != null) {
-			jtextid.setText(Integer.toString(mat.getId()));
-			jnombre.setText(mat.getNombre());
-			jacronimo.setText(mat.getAcronimo());
-			//jcombo
-		}
-		
-	}
 	
-	private void anteriorRegistro() {
-		
-		Materia mat = new Materia(Integer.parseInt(this.jtextid.getText()), 
-				this.jnombre.getText(), this.jacronimo.getText(), 0);
-
-		Materia mat2 = ControllerMateria.anteriorRegistro(mat);
-
-		if (mat2 != null) {
-			jtextid.setText(Integer.toString(mat.getId()));
-			jnombre.setText(mat.getNombre());
-			jacronimo.setText(mat.getAcronimo());
-			//jcombo
+	/**
+	 * 
+	 */
+	private void cargarCursosEnJCombo() {
+		List<Curso> cursos = ControllerCurso.findAll();
+		for (Curso curso : cursos) {
+			this.comboCurso.addItem(curso);
 		}
-		
-	}
+	}	
+	
 	
 	/**
 	 * 
 	 */
 	private void guardarRegistro() {
 
-		Materia mat = new Materia(Integer.parseInt(this.jtextid.getText()), this.jnombre.getText(), this.jacronimo.getText(), 0);
-
-		int affected = ControllerMateria.guardarRegistro(mat);
-
-		compruebaAffected(affected);
-		cargarPrimerRegistro();
+		Materia mat = new Materia();
+		mat.setId(Integer.parseInt(this.jtextid.getText()));
+		mat.setNombre(this.jnombre.getText());
+		mat.setAcronimo(this.jacronimo.getText());
+		
+		Curso curso = (Curso) this.comboCurso.getSelectedItem();
+		mat.setCurso_id(curso.getId());
+		
+		String strError = "No se ha podido guardar";
+		if (mat.getId() == 0) {
+			int nuevoIdInsertado = ControllerMateria.insertar(mat);
+			if (nuevoIdInsertado < 1) {
+				JOptionPane.showMessageDialog(null, strError);
+			}
+			else {
+				this.jtextid.setText("" + nuevoIdInsertado);
+			}
+		}
+		else {
+			if (ControllerMateria.modificar(mat) != 1) {
+				JOptionPane.showMessageDialog(null, strError);
+			}
+		}
+		
 	}
 	
 	
@@ -295,39 +274,85 @@ public class PanelMateria extends JPanel {
 	 */
 	private void eliminarRegistro() {
 		
-		
-		if (JOptionPane.showConfirmDialog(null, "¿Seguro que quiere eliminar?") == JOptionPane.YES_OPTION) {
+		String posiblesRespuestas[] = {"Sí","No"};
+		// En esta opción se utiliza un showOptionDialog en el que personalizo el icono mostrado
+		int opcionElegida = JOptionPane.showOptionDialog(null, "¿Realmente desea eliminar?", 
+				"Eliminación", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, 
+				null, posiblesRespuestas, posiblesRespuestas[1]);
+	    if(opcionElegida == 0) {
+	    	int actualId = Integer.parseInt(this.jtextid.getText());
+		    if (ControllerMateria.eliminarRegistro(actualId) != 1) {
+		    	JOptionPane.showMessageDialog(null, "Algo ha salido mal");
+		    }
+		    else {
+		    	// Cargo otro registro en pantalla
+		    	Materia mAnterior = ControllerMateria.anteriorRegistro(actualId);
+		    	if (mAnterior != null) {
+		    		cargarEnPantalla(mAnterior);
+		    	}
+		    	else {
+		    		Materia mSiguiente = ControllerMateria.siguienteRegistro(actualId);
+		    		if (mSiguiente != null) {
+		    			cargarEnPantalla(mSiguiente);
+		    		}
+		    		else { // No quedan registros, has eliminado el único
+		    			limpiarDatos();
+		    		}
+		    	}
+		    }
+	    }
 			
-			Materia mat = new Materia(Integer.parseInt(this.jtextid.getText()), this.jnombre.getText(), this.jacronimo.getText(), 0);
-
-			int affected = ControllerMateria.eliminarRegistro(mat);
-			
-			compruebaAffected(affected);
-			
-			anteriorRegistro();
-			
-		}
-		
-		
 	}
-	
 	
 	/**
 	 * 
-	 * @param affected
 	 */
-	private void compruebaAffected(int affected) {
-		
-		if (affected == 1) {
-			JOptionPane.showInternalMessageDialog(null, 
-					"Han sido afectadas "+affected+" filas");
-		} else {
-			JOptionPane.showInternalMessageDialog(null, 
-					"Error, no se ha modicado ningun registro");
+	private void limpiarDatos() {
+		this.jtextid.setText("0");
+		this.jnombre.setText("");
+		this.jacronimo.setText("");
+		if (this.comboCurso.getItemCount() > 0) {
+			this.comboCurso.setSelectedIndex(0);
 		}
-		
 	}
 	
+	/**
+	 * 
+	 * @param m
+	 */
+	private void cargarEnPantalla (Materia m) {
+		if (m != null) {
+			this.jtextid.setText("" + m.getId());
+			this.jnombre.setText(m.getNombre());
+			this.jacronimo.setText(m.getAcronimo());
+			
+			for (int i = 0; i < this.comboCurso.getItemCount(); i++) {
+				Curso curso = this.comboCurso.getItemAt(i);
+				if (m.getCurso_id() == curso.getId()) {
+					this.comboCurso.setSelectedIndex(i);
+				}
+			}
+		}
+		
+		// Habilito y deshabilito botones de navegación
+		if (ControllerMateria.anteriorRegistro(Integer.parseInt(jtextid.getText())) == null) {
+			this.btnPrimero.setEnabled(false);
+			this.btnAnterior.setEnabled(false);
+		}
+		else {
+			this.btnPrimero.setEnabled(true);
+			this.btnAnterior.setEnabled(true);
+		}
+
+		if (ControllerMateria.siguienteRegistro(Integer.parseInt(jtextid.getText())) == null) {
+			this.btnUltimo.setEnabled(false);
+			this.btnSiguiente.setEnabled(false);
+		}
+		else {
+			this.btnUltimo.setEnabled(true);
+			this.btnSiguiente.setEnabled(true);
+		}
 	
+	}
 
 }

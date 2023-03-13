@@ -6,6 +6,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -13,9 +14,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+
+import Controllers.ControllerEstudiante;
 import Controllers.ControllerMateria;
+import Controllers.ControllerProfesor;
 import Controllers.ControllerValoracionMateria;
+import Model.Estudiante;
 import Model.Materia;
+import Model.Profesor;
 import Model.ValoracionMateria;
 
 import javax.swing.JComboBox;
@@ -33,9 +39,9 @@ public class PanelValoracionMateria extends JPanel {
 	private JButton btnGuardar;
 	private JButton btnModificar;
 	private JButton btnEliminar;
-	private JComboBox comboProfesor;
-	private JComboBox comboEstudiante;
-	private JComboBox comboMateria;
+	private JComboBox<Profesor> comboProfesor;
+	private JComboBox<Estudiante> comboEstudiante;
+	private JComboBox<Materia> comboMateria;
 	private JLabel lblNewLabel_2;
 	private JLabel lblNewLabel_3;
 	private JLabel lblNewLabel_4;
@@ -90,7 +96,7 @@ public class PanelValoracionMateria extends JPanel {
 		gbc_lblNewLabel_2.gridy = 2;
 		add(lblNewLabel_2, gbc_lblNewLabel_2);
 		
-		comboProfesor = new JComboBox();
+		comboProfesor = new JComboBox<Profesor>();
 		GridBagConstraints gbc_comboProfesor = new GridBagConstraints();
 		gbc_comboProfesor.insets = new Insets(0, 0, 5, 0);
 		gbc_comboProfesor.fill = GridBagConstraints.HORIZONTAL;
@@ -107,7 +113,7 @@ public class PanelValoracionMateria extends JPanel {
 		gbc_lblNewLabel_3.gridy = 3;
 		add(lblNewLabel_3, gbc_lblNewLabel_3);
 		
-		comboEstudiante = new JComboBox();
+		comboEstudiante = new JComboBox<Estudiante>();
 		GridBagConstraints gbc_comboEstudiante = new GridBagConstraints();
 		gbc_comboEstudiante.insets = new Insets(0, 0, 5, 0);
 		gbc_comboEstudiante.fill = GridBagConstraints.HORIZONTAL;
@@ -124,7 +130,7 @@ public class PanelValoracionMateria extends JPanel {
 		gbc_lblNewLabel_4.gridy = 4;
 		add(lblNewLabel_4, gbc_lblNewLabel_4);
 		
-		comboMateria = new JComboBox();
+		comboMateria = new JComboBox<Materia>();
 		GridBagConstraints gbc_comboMateria = new GridBagConstraints();
 		gbc_comboMateria.insets = new Insets(0, 0, 5, 0);
 		gbc_comboMateria.fill = GridBagConstraints.HORIZONTAL;
@@ -172,7 +178,8 @@ public class PanelValoracionMateria extends JPanel {
 		btnAnterior.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// Boton Anterior Registro
-				anteriorRegistro();
+				cargarEnPantalla(ControllerValoracionMateria.anteriorRegistro(
+						Integer.parseInt(jtextid.getText())));
 			}
 		});
 		panel.add(btnAnterior);
@@ -181,7 +188,8 @@ public class PanelValoracionMateria extends JPanel {
 		btnSiguiente.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// Boton Siguiente
-				siguienteRegistro();
+				cargarEnPantalla(ControllerValoracionMateria.siguienteRegistro(
+						Integer.parseInt(jtextid.getText())));
 				
 			}
 		});
@@ -191,7 +199,7 @@ public class PanelValoracionMateria extends JPanel {
 		btnUltimo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//Boton Ultimo Registro
-				ultimoRegistro();
+				cargarEnPantalla(ControllerValoracionMateria.cargarUltimoRegistro());
 				
 			}
 		});
@@ -210,8 +218,7 @@ public class PanelValoracionMateria extends JPanel {
 		btnModificar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				jtextid.setText("0");
-				jvaloracion.setText("");
+				limpiarDatos();
 				
 			}
 		});
@@ -227,90 +234,56 @@ public class PanelValoracionMateria extends JPanel {
 			}
 		});
 		panel.add(btnEliminar);
+		
+		cargarProfesorEnJCombo();
+		cargarEstudianteEnJCombo();
+		cargarMateriaEnJCombo();	
 		cargarPrimerRegistro();
 		
 	}
+	
+	
+	
+	/**
+	 * 
+	 */
+	private void cargarMateriaEnJCombo() {
+		
+		List<Materia> materias = ControllerMateria.findAll();
+		for (Materia materia : materias) {
+			this.comboMateria.addItem(materia);
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	private void cargarProfesorEnJCombo() {
+		
+		List<Profesor> profesores = ControllerProfesor.findAll();
+		for (Profesor profesor : profesores) {
+			this.comboProfesor.addItem(profesor);
+		}
+		
+	}
+	
+	/**
+	 * 
+	 */
+	private void cargarEstudianteEnJCombo() {
+		List<Estudiante> estudiantes = ControllerEstudiante.findAll();
+		for (Estudiante estudiante : estudiantes) {
+			this.comboEstudiante.addItem(estudiante);
+		}
+	}
+	
 	
 	/**
 	 * 
 	 */
 	private void cargarPrimerRegistro() {
+		cargarEnPantalla(ControllerValoracionMateria.cargarPrimerRegistro());
 		
-		ValoracionMateria valmat = new ControllerValoracionMateria().cargarPrimerRegistro();
-		
-		if (valmat != null) {
-		
-			jtextid.setText(Integer.toString(valmat.getId()));
-			//ComboProfesor
-			//ComboEstudiante
-			//ComboMateria
-			jvaloracion.setText(Float.toString(valmat.getValoracion()));
-
-			
-		}
-	}
-	
-	
-	/**
-	 * 
-	 */
-	private void ultimoRegistro() {
-		
-		ValoracionMateria valmat = new ControllerValoracionMateria().cargarUltimoRegistro();
-
-		if (valmat != null) {
-
-			jtextid.setText(Integer.toString(valmat.getId()));
-			//ComboProfesor
-			//ComboEstudiante
-			//ComboMateria
-			jvaloracion.setText(Float.toString(valmat.getValoracion()));
-
-		}
-		
-	}
-	
-	/**
-	 * 
-	 */
-	private void siguienteRegistro() {
-		
-		ValoracionMateria valmat = new ValoracionMateria(
-				Integer.parseInt(this.jtextid.getText()), 
-				0, 0, 0,Float.parseFloat(this.jvaloracion.getText()));
-
-		ValoracionMateria valmat2 = ControllerValoracionMateria.siguienteRegistro(valmat);
-
-		if (valmat2 != null) {
-			jtextid.setText(Integer.toString(valmat.getId()));
-			//ComboProfesor
-			//ComboEstudiante
-			//ComboMateria
-			jvaloracion.setText(Float.toString(valmat.getValoracion()));
-		}
-		
-	}
-	
-	
-	/**
-	 * 
-	 */
-	private void anteriorRegistro() {
-
-		ValoracionMateria valmat = new ValoracionMateria(
-				Integer.parseInt(this.jtextid.getText()), 
-				0, 0, 0,Float.parseFloat(this.jvaloracion.getText()));
-
-		ValoracionMateria valmat2 = ControllerValoracionMateria.anteriorRegistro(valmat);
-
-		if (valmat2 != null) {
-			jtextid.setText(Integer.toString(valmat.getId()));
-			//ComboProfesor
-			//ComboEstudiante
-			//ComboMateria
-			jvaloracion.setText(Float.toString(valmat.getValoracion()));
-		}
-
 	}
 	
 	
@@ -319,14 +292,36 @@ public class PanelValoracionMateria extends JPanel {
 	 */
 	private void guardarRegistro() {
 
-		ValoracionMateria valmat = new ValoracionMateria(
-				Integer.parseInt(this.jtextid.getText()), 
-				0, 0, 0,Float.parseFloat(this.jvaloracion.getText()));
-
-		int affected = ControllerValoracionMateria.guardarRegistro(valmat);
-
-		compruebaAffected(affected);
-		cargarPrimerRegistro();
+		ValoracionMateria var = new ValoracionMateria();
+		var.setId(Integer.parseInt(this.jtextid.getText()));
+		
+		Profesor profesor = (Profesor) this.comboProfesor.getSelectedItem();
+		var.setIdProfesor(profesor.getId());
+		
+		Estudiante estudiante = (Estudiante) this.comboEstudiante.getSelectedItem();
+		var.setIdEstudiante(estudiante.getId());
+		
+		Materia materia = (Materia) this.comboMateria.getSelectedItem();
+		var.setIdMateria(materia.getId());
+		
+		var.setValoracion(Float.parseFloat(this.jvaloracion.getText()));
+		
+		String strError = "No se ha podido guardar";
+		if (var.getId() == 0) {
+			int nuevoIdInsertado = ControllerValoracionMateria.insertar(var);
+			if (nuevoIdInsertado < 1) {
+				JOptionPane.showMessageDialog(null, strError);
+			}
+			else {
+				this.jtextid.setText("" + nuevoIdInsertado);
+			}
+		}
+		else {
+			if (ControllerValoracionMateria.modificar(var) != 1) {
+				JOptionPane.showMessageDialog(null, strError);
+			}
+		}
+		
 	}
 	
 	
@@ -335,39 +330,106 @@ public class PanelValoracionMateria extends JPanel {
 	 */
 	private void eliminarRegistro() {
 		
-		
-		if (JOptionPane.showConfirmDialog(null, "¿Seguro que quiere eliminar?") == JOptionPane.YES_OPTION) {
+		String posiblesRespuestas[] = {"Sí","No"};
+		// En esta opción se utiliza un showOptionDialog en el que personalizo el icono mostrado
+		int opcionElegida = JOptionPane.showOptionDialog(null, "¿Realmente desea eliminar?", 
+				"Eliminación", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, 
+				null, posiblesRespuestas, posiblesRespuestas[1]);
+	    if(opcionElegida == 0) {
+	    	int actualId = Integer.parseInt(this.jtextid.getText());
+		    if (ControllerValoracionMateria.eliminarRegistro(actualId) != 1) {
+		    	JOptionPane.showMessageDialog(null, "Algo ha salido mal");
+		    }
+		    else {
+		    	// Cargo otro registro en pantalla
+		    	ValoracionMateria mAnterior = ControllerValoracionMateria.anteriorRegistro(actualId);
+		    	if (mAnterior != null) {
+		    		cargarEnPantalla(mAnterior);
+		    	}
+		    	else {
+		    		ValoracionMateria mSiguiente = ControllerValoracionMateria.siguienteRegistro(actualId);
+		    		if (mSiguiente != null) {
+		    			cargarEnPantalla(mSiguiente);
+		    		}
+		    		else { // No quedan registros, has eliminado el único
+		    			limpiarDatos();
+		    		}
+		    	}
+		    }
+	    }
 			
-			ValoracionMateria valmat = new ValoracionMateria(
-					Integer.parseInt(this.jtextid.getText()), 
-					0, 0, 0,Float.parseFloat(this.jvaloracion.getText()));
-
-			int affected = ControllerValoracionMateria.eliminarRegistro(valmat);
-			
-			compruebaAffected(affected);
-			
-			anteriorRegistro();
-			
-		}
-		
-		
 	}
-	
 	
 	/**
 	 * 
-	 * @param affected
 	 */
-	private void compruebaAffected(int affected) {
+	private void limpiarDatos() {
+		this.jtextid.setText("0");
+		this.jvaloracion.setText("");
 		
-		if (affected == 1) {
-			JOptionPane.showInternalMessageDialog(null, 
-					"Han sido afectadas "+affected+" filas");
-		} else {
-			JOptionPane.showInternalMessageDialog(null, 
-					"Error, no se ha modicado ningun registro");
+		if (this.comboProfesor.getItemCount() > 0) {
+			this.comboProfesor.setSelectedIndex(0);
+		}
+		
+		if (this.comboEstudiante.getItemCount() > 0) {
+			this.comboEstudiante.setSelectedIndex(0);
+		}
+		
+		if (this.comboMateria.getItemCount() > 0) {
+			this.comboMateria.setSelectedIndex(0);
 		}
 		
 	}
+	
+	/**
+	 * 
+	 * @param m
+	 */
+	private void cargarEnPantalla (ValoracionMateria vm) {
+		
+	if (vm != null) {
+		this.jtextid.setText("" + vm.getId());
+		this.jvaloracion.setText("" + vm.getValoracion());
+		for (int i = 0; i < this.comboProfesor.getItemCount(); i++) {
+			Profesor p = this.comboProfesor.getItemAt(i);
+			if (vm.getIdProfesor() == p.getId()) {
+				this.comboProfesor.setSelectedIndex(i);
+			}
+		}
+		for (int i = 0; i < this.comboEstudiante.getItemCount(); i++) {
+			Estudiante e = this.comboEstudiante.getItemAt(i);
+			if (vm.getId() == e.getId()) {
+				this.comboEstudiante.setSelectedIndex(i);
+			}
+		}
+		for (int i = 0; i < this.comboMateria.getItemCount(); i++) {
+			Materia m = this.comboMateria.getItemAt(i);
+			if (vm.getIdMateria() == m.getId()) {
+				this.comboMateria.setSelectedIndex(i);
+			}
+		}
+
+	}
+
+	// Habilito y deshabilito botones de navegación
+	if (ControllerValoracionMateria.anteriorRegistro(Integer.parseInt(jtextid.getText())) == null) {
+		this.btnPrimero.setEnabled(false);
+		this.btnAnterior.setEnabled(false);
+	} else {
+		this.btnPrimero.setEnabled(true);
+		this.btnAnterior.setEnabled(true);
+	}
+
+	if (ControllerValoracionMateria.siguienteRegistro(Integer.parseInt(jtextid.getText())) == null) {
+		this.btnUltimo.setEnabled(false);
+		this.btnSiguiente.setEnabled(false);
+	} else {
+		this.btnUltimo.setEnabled(true);
+		this.btnSiguiente.setEnabled(true);
+	}
+	
+	}
+	
+	
 
 }

@@ -5,13 +5,43 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import Model.Curso;
+import tutorialJava.capitulo9_AWT_SWING.ejemplos.ejemploJTabbedPane.controller.ConnectionManager;
 
 public class ControllerCurso {
 	
 	private static Connection conn = null;
 	
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public static List<Curso> findAll() {
+		List<Curso> cursos = new ArrayList<Curso>();
+		
+		try {
+			Connection conn = ConnectionManagerV1.getConexion();
+			Statement st = conn.createStatement();
+			ResultSet rs = st.executeQuery("select * from curso");
+			
+			while (rs.next()) {
+				Curso curso = new Curso();
+				curso.setId(rs.getInt("id"));
+				curso.setDescripcion(rs.getString("descripcion"));
+				cursos.add(curso);
+			}
+			
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		
+		return cursos;
+	}
 	
 	/**
 	 * 
@@ -76,7 +106,7 @@ public class ControllerCurso {
 
 			st.close();
 			rs.close();
-			conn.close();
+
 			return curso;
 
 		} catch (SQLException e) {
@@ -111,7 +141,7 @@ public class ControllerCurso {
 
 			st.close();
 			rs.close();
-			conn.close();
+	
 			return curso;
 			
 		} catch (SQLException e) {
@@ -146,7 +176,7 @@ public class ControllerCurso {
 
 			st.close();
 			rs.close();
-			conn.close();
+
 			return curso;
 
 		} catch (SQLException e) {
@@ -183,7 +213,7 @@ public class ControllerCurso {
 
 			
 			st.close();
-			conn.close();
+
 			
 			return afected;
 
