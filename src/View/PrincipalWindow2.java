@@ -21,6 +21,8 @@ public class PrincipalWindow2 extends JFrame {
 		
 		JTabbedPane tabedPane = new JTabbedPane();
 		
+		tabedPane.add("PanelPrueba", new PanelPrueba());
+		
 		tabedPane.add("Cursos", new PanelCurso());
 		
 		tabedPane.add("Materia", new PanelMateria());
@@ -30,7 +32,6 @@ public class PrincipalWindow2 extends JFrame {
 		tabedPane.add("Profesor", new PanelProfesor());
 		
 		tabedPane.add("Valoracion Materia", new PanelValoracionMateria());
-		
 		
 		
 		this.setContentPane(tabedPane);
